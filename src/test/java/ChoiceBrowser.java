@@ -1,3 +1,4 @@
+package tests;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
 import org.junit.Before;
@@ -13,8 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class ChoiceBrowser {
     WebDriver driver;
 
-// Выбор браузера
+    // Выбор браузера
     @Before
+
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
@@ -30,7 +32,7 @@ public class ChoiceBrowser {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
-// Закрыть браузер
+    // Закрыть браузер
     @After
     public void tearDown() {
         if(driver != null){

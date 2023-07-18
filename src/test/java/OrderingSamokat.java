@@ -1,62 +1,74 @@
-import pageObjects.MainPage;
-import pageObjects.OrderPage;
-import pageObjects.RentPage;
+package tests;
+
+import pageobject.OrderPage;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-public class OrderingSamokat extends ChoiceBrowser {
 
-//Тест заказа через кнопку в хэдере
-    @Test
-    public void samokatOrderingByHeaderOrderButton() {
-        new MainPage(driver)
-                .openSite()
-                .clickCookiesButton()
-                .clickHOrderButton();
+@RunWith(Parameterized.class)
 
-        new OrderPage(driver)
-                .sendClientFirstName("Ярослав")
-                .sendClientLastName("Червонящий")
-                .sendDeliveryAddress("Пенза, Ватутина, 4")
-                .selectMetroStation("Черкизовская")
-                .sendDeliveryClientPhoneNumber("89968988989")
-                .clickNextButton();
+public class OrderingSamokat extends tests.ChoiceBrowser {
 
-        boolean isDisplayed = new RentPage(driver)
-                .sendRentalDate("15.07.2023")
-                .setRentalTime()
-                .clickCheckBoxColourBlackPearl()
-                .sendComment("Привезите полность заряженный аппарат")
-                .clickOrderButton()
-                .clickOrderButtonYes()
-                .isModalOrderWindowDisplayed();
-        assertTrue("Окно заказа не появилось, попробуем ещё раз", isDisplayed);
+    private final String URL = "https://qa-scooter.praktikum-services.ru/";
+
+    //задали переменные для теста
+    boolean upButton;
+    String name;
+    String surname;
+    String adress;
+    String metroStation;
+    String number;
+    int Time;
+    String comment;
+    String colour;
+
+    public OrderingSamokat(boolean upButton, String name, String surname, String adress, String metroStation, String number, int Time, String comment, String colour) {
+        this.upButton = upButton;
+        this.name = name;
+        this.surname = surname;
+        this.adress = adress;
+        this.metroStation = metroStation;
+        this.number = number;
+        this.Time = Time;
+        this.comment = comment;
+        this.colour = colour;
     }
-//Тест заказа через кнопку в середине страницы
-    @Test
-    public void samokatOrderingByMiddleOrderButton() {
-        new MainPage(driver)
-                .openSite()
-                .clickCookiesButton()
-                .clickMOrderButton();
 
-        new OrderPage(driver)
-                .sendClientFirstName("Настя")
-                .sendClientLastName("Червонящая")
-                .sendDeliveryAddress("Пенза, Мира, 65")
-                .selectMetroStation("Митино")
-                .sendDeliveryClientPhoneNumber("89968988990")
-                .clickNextButton();
 
-        boolean isDisplayed = new RentPage(driver)
-                .sendRentalDate("14.07.2023")
-                .setRentalTime()
-                .clickCheckBoxColourGreyDespair()
-                .sendComment("Буду кататься с детьми")
-                .clickOrderButton()
-                .clickOrderButtonYes()
-                .isModalOrderWindowDisplayed();
-        assertTrue("Окно заказа не появилось, заказать немогу", isDisplayed);
+
+    @Parameterized.Parameters
+    public static Object[] getInfo() {
+        return new Object[][]{
+                {true, "Ярослав", "Червонящий", "Ватутина 4", "56", "89969999999", 1, "Проверка №1", "black"},
+
+                {false, "Настя", "Червонящая", "Ватутина 4", "56", "89969999998", 2, "Проверка №1", "grey"},
+        };
     }
+
+    //@Before
+
+
+    @Test
+    public void checkScooterOrder() {
+        driver.get(URL);
+        OrderPage orderpage = new OrderPage(driver);
+
+        orderpage.clickCookie();
+        orderpage.clickOderButton(upButton);
+        orderpage.login(name, surname, adress, number);
+        orderpage.clickUndegroundList(metroStation);
+        orderpage.clickNextButton();
+        orderpage.setOrderDate();
+        orderpage.setPeriod(Time);
+        orderpage.setColour(colour);
+        orderpage.setComment(comment);
+        orderpage.clickOrderFormButton();
+        orderpage.clickYesButton();
+        orderpage.setConfirmationButton();
+        orderpage.getConfirmationInfo();
+    }
+
 }
